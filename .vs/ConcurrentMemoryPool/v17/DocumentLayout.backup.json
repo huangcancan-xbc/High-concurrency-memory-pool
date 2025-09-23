@@ -3,12 +3,48 @@
   "WorkspaceRootPath": "D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{7768E000-1C30-4B92-B881-D7E9FFBFBE43}|ConcurrentMemoryPool.vcxproj|D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\Benchmark.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7768E000-1C30-4B92-B881-D7E9FFBFBE43}|ConcurrentMemoryPool.vcxproj|solutionrelative:Benchmark.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7768E000-1C30-4B92-B881-D7E9FFBFBE43}|ConcurrentMemoryPool.vcxproj|D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\PageCache.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7768E000-1C30-4B92-B881-D7E9FFBFBE43}|ConcurrentMemoryPool.vcxproj|solutionrelative:PageCache.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7768E000-1C30-4B92-B881-D7E9FFBFBE43}|ConcurrentMemoryPool.vcxproj|D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\ConcurrentAlloc.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7768E000-1C30-4B92-B881-D7E9FFBFBE43}|ConcurrentMemoryPool.vcxproj|solutionrelative:ConcurrentAlloc.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7768E000-1C30-4B92-B881-D7E9FFBFBE43}|ConcurrentMemoryPool.vcxproj|D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\Common.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7768E000-1C30-4B92-B881-D7E9FFBFBE43}|ConcurrentMemoryPool.vcxproj|solutionrelative:Common.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7768E000-1C30-4B92-B881-D7E9FFBFBE43}|ConcurrentMemoryPool.vcxproj|D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\CentralCache.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7768E000-1C30-4B92-B881-D7E9FFBFBE43}|ConcurrentMemoryPool.vcxproj|solutionrelative:CentralCache.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7768E000-1C30-4B92-B881-D7E9FFBFBE43}|ConcurrentMemoryPool.vcxproj|D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\ThreadCache.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7768E000-1C30-4B92-B881-D7E9FFBFBE43}|ConcurrentMemoryPool.vcxproj|solutionrelative:ThreadCache.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7768E000-1C30-4B92-B881-D7E9FFBFBE43}|ConcurrentMemoryPool.vcxproj|D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\UnitTest.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7768E000-1C30-4B92-B881-D7E9FFBFBE43}|ConcurrentMemoryPool.vcxproj|solutionrelative:UnitTest.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7768E000-1C30-4B92-B881-D7E9FFBFBE43}|ConcurrentMemoryPool.vcxproj|D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\CentralCache.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7768E000-1C30-4B92-B881-D7E9FFBFBE43}|ConcurrentMemoryPool.vcxproj|solutionrelative:CentralCache.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7768E000-1C30-4B92-B881-D7E9FFBFBE43}|ConcurrentMemoryPool.vcxproj|D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\PageCache.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7768E000-1C30-4B92-B881-D7E9FFBFBE43}|ConcurrentMemoryPool.vcxproj|solutionrelative:PageCache.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{7768E000-1C30-4B92-B881-D7E9FFBFBE43}|ConcurrentMemoryPool.vcxproj|D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\ObjectPool.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{7768E000-1C30-4B92-B881-D7E9FFBFBE43}|ConcurrentMemoryPool.vcxproj|solutionrelative:ObjectPool.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7768E000-1C30-4B92-B881-D7E9FFBFBE43}|ConcurrentMemoryPool.vcxproj|D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\ConcurrentMemoryPool.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{7768E000-1C30-4B92-B881-D7E9FFBFBE43}|ConcurrentMemoryPool.vcxproj|solutionrelative:ConcurrentMemoryPool.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{7768E000-1C30-4B92-B881-D7E9FFBFBE43}|ConcurrentMemoryPool.vcxproj|D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\ThreadCache.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7768E000-1C30-4B92-B881-D7E9FFBFBE43}|ConcurrentMemoryPool.vcxproj|solutionrelative:ThreadCache.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -35,25 +71,139 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "ObjectPool.h",
-              "DocumentMoniker": "D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\ObjectPool.h",
-              "RelativeDocumentMoniker": "ObjectPool.h",
-              "ToolTip": "D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\ObjectPool.h",
-              "RelativeToolTip": "ObjectPool.h",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAEAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-09-18T09:05:21.939Z",
+              "Title": "Benchmark.cpp",
+              "DocumentMoniker": "D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\Benchmark.cpp",
+              "RelativeDocumentMoniker": "Benchmark.cpp",
+              "ToolTip": "D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\Benchmark.cpp",
+              "RelativeToolTip": "Benchmark.cpp",
+              "ViewState": "AgIAAGwAAAAAAAAAAAAAAHIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-09-23T11:19:45.153Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "CentralCache.cpp",
+              "DocumentMoniker": "D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\CentralCache.cpp",
+              "RelativeDocumentMoniker": "CentralCache.cpp",
+              "ToolTip": "D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\CentralCache.cpp",
+              "RelativeToolTip": "CentralCache.cpp",
+              "ViewState": "AgIAAJIAAAAAAAAAAAAAAHAAAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-09-20T12:15:31.05Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "ConcurrentMemoryPool.cpp",
-              "DocumentMoniker": "D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\ConcurrentMemoryPool.cpp",
-              "RelativeDocumentMoniker": "ConcurrentMemoryPool.cpp",
-              "ToolTip": "D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\ConcurrentMemoryPool.cpp",
-              "RelativeToolTip": "ConcurrentMemoryPool.cpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAANAAAAAAAAAA==",
+              "Title": "PageCache.cpp",
+              "DocumentMoniker": "D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\PageCache.cpp",
+              "RelativeDocumentMoniker": "PageCache.cpp",
+              "ToolTip": "D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\PageCache.cpp",
+              "RelativeToolTip": "PageCache.cpp",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAABoAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-09-21T06:56:28.274Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "PageCache.h",
+              "DocumentMoniker": "D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\PageCache.h",
+              "RelativeDocumentMoniker": "PageCache.h",
+              "ToolTip": "D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\PageCache.h",
+              "RelativeToolTip": "PageCache.h",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAABgAAAATAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-09-21T06:56:14.032Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "CentralCache.h",
+              "DocumentMoniker": "D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\CentralCache.h",
+              "RelativeDocumentMoniker": "CentralCache.h",
+              "ToolTip": "D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\CentralCache.h",
+              "RelativeToolTip": "CentralCache.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAATAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-09-20T09:46:02.033Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ConcurrentAlloc.h",
+              "DocumentMoniker": "D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\ConcurrentAlloc.h",
+              "RelativeDocumentMoniker": "ConcurrentAlloc.h",
+              "ToolTip": "D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\ConcurrentAlloc.h",
+              "RelativeToolTip": "ConcurrentAlloc.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-09-20T09:01:33.892Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Common.h",
+              "DocumentMoniker": "D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\Common.h",
+              "RelativeDocumentMoniker": "Common.h",
+              "ToolTip": "D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\Common.h",
+              "RelativeToolTip": "Common.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-09-20T07:48:00.26Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "ThreadCache.h",
+              "DocumentMoniker": "D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\ThreadCache.h",
+              "RelativeDocumentMoniker": "ThreadCache.h",
+              "ToolTip": "D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\ThreadCache.h",
+              "RelativeToolTip": "ThreadCache.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAACAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-09-20T07:47:38.539Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ThreadCache.cpp",
+              "DocumentMoniker": "D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\ThreadCache.cpp",
+              "RelativeDocumentMoniker": "ThreadCache.cpp",
+              "ToolTip": "D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\ThreadCache.cpp",
+              "RelativeToolTip": "ThreadCache.cpp",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAAD4AAAAwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-09-20T07:47:08.554Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "ObjectPool.h",
+              "DocumentMoniker": "D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\ObjectPool.h",
+              "RelativeDocumentMoniker": "ObjectPool.h",
+              "ToolTip": "D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\ObjectPool.h",
+              "RelativeToolTip": "ObjectPool.h",
+              "ViewState": "AgIAADkAAAAAAAAAAAAAAEYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-09-18T09:05:21.939Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "UnitTest.cpp",
+              "DocumentMoniker": "D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\UnitTest.cpp",
+              "RelativeDocumentMoniker": "UnitTest.cpp",
+              "ToolTip": "D:\\Coding\\Visual Studio 2022\\ConcurrentMemoryPool\\UnitTest.cpp",
+              "RelativeToolTip": "UnitTest.cpp",
+              "ViewState": "AgIAAEUAAAAAAAAAAAAAAEsAAAACAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-09-18T09:02:26.64Z",
               "EditorCaption": ""

@@ -1,15 +1,6 @@
 #pragma once
-#include <iostream>
-#include <vector>
-#include <ctime>
-using std::cout;
-using std::endl;
+#include "Common.h"
 
-#ifdef _WIN32
-    #include <Windows.h>
-#else
-    #include <pthread.h>
-#endif
 
 
 // 定长内存池
@@ -19,23 +10,6 @@ using std::endl;
 //
 //};
 
-
-// 直接去堆上按页申请空间
-inline static void* SystemAlloc(size_t kpage)
-{
-#ifdef _WIN32
-    void* ptr = VirtualAlloc(0, kpage << 13, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-#else
-    // Linux
-#endif
-
-    if (ptr == nullptr)
-    {
-        throw std::bad_alloc();
-    }
-
-    return ptr;
-}
 
 template<typename T>
 class ObjectPool
@@ -98,67 +72,67 @@ private:
 
 
 
-struct TreeNode
-{
-    int _val;
-    TreeNode* _left;
-    TreeNode* _right;
-
-    TreeNode()
-        : _val(0)
-        , _left(nullptr)
-        , _right(nullptr)
-    {
-    }
-};
-
-void TestObjectPool()
-{
-    // 申请释放的轮次
-    const size_t Rounds = 10;
-
-    // 每轮申请释放多少次
-    const size_t N = 1000000;
-
-    std::vector<TreeNode*> v1;
-    v1.reserve(N);
-
-    size_t begin1 = clock();
-    for (size_t j = 0; j < Rounds; ++j)
-    {
-        for (int i = 0; i < N; ++i)
-        {
-            v1.push_back(new TreeNode);
-        }
-        for (int i = 0; i < N; ++i)
-        {
-            delete v1[i];
-        }
-        v1.clear();
-    }
-
-    size_t end1 = clock();
-
-    std::vector<TreeNode*> v2;
-    v2.reserve(N);
-
-    ObjectPool<TreeNode> TNPool;
-    size_t begin2 = clock();
-    for (size_t j = 0; j < Rounds; ++j)
-    {
-        for (int i = 0; i < N; ++i)
-        {
-            v2.push_back(TNPool.New());
-        }
-        for (int i = 0; i < N; ++i)
-        {
-            TNPool.Delete(v2[i]);
-        }
-        v2.clear();
-    }
-
-    size_t end2 = clock();
-
-    cout << "普通申请释放花费时间：" << end1 - begin1 << endl;
-    cout << "对象池申请释放花费时间：" << end2 - begin2 << endl;
-}
+//struct TreeNode
+//{
+//    int _val;
+//    TreeNode* _left;
+//    TreeNode* _right;
+//
+//    TreeNode()
+//        : _val(0)
+//        , _left(nullptr)
+//        , _right(nullptr)
+//    {
+//    }
+//};
+//
+//void TestObjectPool()
+//{
+//    // 申请释放的轮次
+//    const size_t Rounds = 10;
+//
+//    // 每轮申请释放多少次
+//    const size_t N = 1000000;
+//
+//    std::vector<TreeNode*> v1;
+//    v1.reserve(N);
+//
+//    size_t begin1 = clock();
+//    for (size_t j = 0; j < Rounds; ++j)
+//    {
+//        for (int i = 0; i < N; ++i)
+//        {
+//            v1.push_back(new TreeNode);
+//        }
+//        for (int i = 0; i < N; ++i)
+//        {
+//            delete v1[i];
+//        }
+//        v1.clear();
+//    }
+//
+//    size_t end1 = clock();
+//
+//    std::vector<TreeNode*> v2;
+//    v2.reserve(N);
+//
+//    ObjectPool<TreeNode> TNPool;
+//    size_t begin2 = clock();
+//    for (size_t j = 0; j < Rounds; ++j)
+//    {
+//        for (int i = 0; i < N; ++i)
+//        {
+//            v2.push_back(TNPool.New());
+//        }
+//        for (int i = 0; i < N; ++i)
+//        {
+//            TNPool.Delete(v2[i]);
+//        }
+//        v2.clear();
+//    }
+//
+//    size_t end2 = clock();
+//
+//    cout << "普通申请释放花费时间：" << end1 - begin1 << endl;
+//    cout << "对象池申请释放花费时间：" << end2 - begin2 << endl;
+//}

@@ -123,10 +123,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ConcurrentMemoryPool.cpp" />
+    <ClCompile Include="Benchmark.cpp" />
+    <ClCompile Include="CentralCache.cpp" />
+    <ClCompile Include="PageCache.cpp" />
+    <ClCompile Include="UnitTest.cpp" />
+    <ClCompile Include="ThreadCache.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CentralCache.h" />
+    <ClInclude Include="Common.h" />
+    <ClInclude Include="ConcurrentAlloc.h" />
     <ClInclude Include="ObjectPool.h" />
+    <ClInclude Include="PageCache.h" />
+    <ClInclude Include="ThreadCache.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
