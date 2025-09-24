@@ -135,6 +135,7 @@
     <ClInclude Include="ConcurrentAlloc.h" />
     <ClInclude Include="ObjectPool.h" />
     <ClInclude Include="PageCache.h" />
+    <ClInclude Include="PageMap.h" />
     <ClInclude Include="ThreadCache.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
