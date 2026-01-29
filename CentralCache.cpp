@@ -1,12 +1,13 @@
-#include "CentralCache.h"
+ï»¿#include "CentralCache.h"
 #include "PageCache.h"
 
 CentralCache CentralCache::_sInst;
 
-// »ñÈ¡Ò»¸ö·Ç¿ÕµÄ Span
+// èŽ·å–ä¸€ä¸ªéžç©ºçš„ Span
 Span* CentralCache::GetOneSpan(SpanList& list, size_t size)
 {
-    // ÏÈ²é¿´µ±Ç°µÄ spanlist ÖÐÊÇ·ñ»¹ÓÐÎ´·ÖÅäµÄ¶ÔÏó span
+    // å…ˆåœ¨æœ¬æ¡¶é‡Œæ‰¾ï¼Œæœ‰ç©ºé—²å°±ä¸è§¦å‘ PageCache
+    // å…ˆæŸ¥çœ‹å½“å‰çš„ spanlist ä¸­æ˜¯å¦è¿˜æœ‰æœªåˆ†é…çš„å¯¹è±¡ span
     Span* it = list.Begin();
     while (it != list.End())
     {
@@ -20,25 +21,27 @@ Span* CentralCache::GetOneSpan(SpanList& list, size_t size)
         }
     }
 
-    // ÏÈ°Ñ central cache µÄÍ°Ëø½âµô£¬ÕâÑù£¬Èç¹ûÆäËûÏß³ÌÊÍ·ÅÄÚ´æ¶ÔÏó»ØÀ´£¬²»»á×èÈû
+    // å…ˆæŠŠæ¡¶é”è§£æŽ‰ï¼Œé¿å…é”ä½æ•´ä¸ªæ¡¶åŽ»åšæ…¢æ“ä½œ
+    // å…ˆæŠŠ central cache çš„æ¡¶é”è§£æŽ‰ï¼Œè¿™æ ·ï¼Œå¦‚æžœå…¶ä»–çº¿ç¨‹é‡Šæ”¾å†…å­˜å¯¹è±¡å›žæ¥ï¼Œä¸ä¼šé˜»å¡ž
     list._mtx.unlock();
 
-    // ×ßµ½ÕâÀïËµÃ÷Ã»ÓÐ¿ÕÏÐµÄ span ÁË£¬Ö»ÄÜÕÒ page cache ÉêÇëÄÚ´æ
+    // PageCache æ˜¯å…¨å±€å…±äº«èµ„æºï¼Œéœ€è¦å•ç‹¬åŠ é”
+    // èµ°åˆ°è¿™é‡Œè¯´æ˜Žæ²¡æœ‰ç©ºé—²çš„ span äº†ï¼Œåªèƒ½æ‰¾ page cache ç”³è¯·å†…å­˜
     PageCache::GetInstance()->_pageMtx.lock();
     Span* span = PageCache::GetInstance()->NewSpan(SizeClass::NumMovePage(size));
     span->_isUse = true;
     span->objSize = size;
     PageCache::GetInstance()->_pageMtx.unlock();
     
-    // ¶Ô»ñÈ¡µÄ span ½øÐÐÇÐ·Ö£¬²»ÐèÒª¼ÓËø£¬ÒòÎªÕâÊ±ÆäËûÏß³Ì·ÃÎÊ²»µ½Õâ¸ö span
-    
-    // ¼ÆËã span µÄ´ó¿éÄÚ´æµÄÆðÊ¼µØÖ·ºÍ´ó¿éÄÚ´æµÄ´óÐ¡£¨×Ö½ÚÊý£©
+    // å¯¹èŽ·å–çš„ span è¿›è¡Œåˆ‡åˆ†ä¸åŠ é”ï¼šæ­¤æ—¶è¿˜æœªæŒ‚å›žæ¡¶ï¼Œå…¶ä»–çº¿ç¨‹çœ‹ä¸åˆ°
+        
+    // è®¡ç®— span çš„å¤§å—å†…å­˜çš„èµ·å§‹åœ°å€å’Œå¤§å—å†…å­˜çš„å¤§å°ï¼ˆå­—èŠ‚æ•°ï¼‰
     char* start = (char*)(span->_pageId << PAGE_SHIFT);
     size_t bytes = span->_n << PAGE_SHIFT;
     char* end = start + bytes;
 
-    // °Ñ´ó¿éÄÚ´æÇÐ³É×ÔÓÉÁ´±íÁ´½ÓÆðÀ´
-    // 1. ÏÈÇÐÒ»¿éÏÂÀ´È¥×öÍ·£¬·½±ãÎ²²å
+    // æŠŠå¤§å—å†…å­˜åˆ‡æˆè‡ªç”±é“¾è¡¨é“¾æŽ¥èµ·æ¥
+    // 1. å…ˆåˆ‡ä¸€å—ä¸‹æ¥åŽ»åšå¤´ï¼Œæ–¹ä¾¿å°¾æ’
     span->_freeList = start;
     start += size;
     void* tail = span->_freeList;
@@ -53,8 +56,8 @@ Span* CentralCache::GetOneSpan(SpanList& list, size_t size)
 
     NextObj(tail) = nullptr;
     
-    //// Ìõ¼þ¶Ïµã
-    //// ÒÉËÆËÀÑ­»·£¬¿ÉÒÔÖÐ¶Ï³ÌÐò£¬³ÌÐò»áÔÚÕýÔÚÔËÐÐµÄµØ·½Í£ÏÂÀ´
+    //// æ¡ä»¶æ–­ç‚¹
+    //// ç–‘ä¼¼æ­»å¾ªçŽ¯ï¼Œå¯ä»¥ä¸­æ–­ç¨‹åºï¼Œç¨‹åºä¼šåœ¨æ­£åœ¨è¿è¡Œçš„åœ°æ–¹åœä¸‹æ¥
     //int j = 0;
     //void* cur = span->_freeList;
     //while (cur)
@@ -68,25 +71,27 @@ Span* CentralCache::GetOneSpan(SpanList& list, size_t size)
     //}
 
 
-    // ÇÐºÃ span ºó£¬ÐèÒª°Ñ span ¹Òµ½Í°ÀïÃæÈ¥µÄÊ±ºò£¬ÔÚ¼ÓËø
+    // åˆ‡å¥½åŽå†æŒ‚å›žæ¡¶ï¼Œå‡å°‘æŒé”æ—¶é—´
+    // åˆ‡å¥½ span åŽï¼Œéœ€è¦æŠŠ span æŒ‚åˆ°æ¡¶é‡Œé¢åŽ»çš„æ—¶å€™ï¼Œåœ¨åŠ é”
     list._mtx.lock();
     list.PushFront(span);
 
     return span;
 }
 
-// ´ÓÖÐÐÄ»º´æ»ñÈ¡Ò»¶¨ÊýÁ¿µÄ¶ÔÏó¸ø thread cache
+// ä»Žä¸­å¿ƒç¼“å­˜èŽ·å–ä¸€å®šæ•°é‡çš„å¯¹è±¡ç»™ thread cache
 size_t CentralCache::FetchRangeObj(void*& start, void*& end, size_t batchNum, size_t size)
 {
     size_t index = SizeClass::Index(size);
+    // æ¡¶çº§é”ï¼šåªæœ‰è®¿é—®åŒä¸€æ¡¶çš„çº¿ç¨‹æ‰ä¼šç«žäº‰
     _spanLists[index]._mtx.lock();
 
     Span* span = GetOneSpan(_spanLists[index], size);
     assert(span);
     assert(span->_freeList != nullptr);
 
-    // ´Ó span ÖÐ»ñÈ¡ batchNum ¸ö¶ÔÏó
-    // Èç¹û²»¹» batchNum ¸ö£¬ÓÐ¶àÉÙÄÃ¶àÉÙ
+    // ä»Ž span ä¸­èŽ·å– batchNum ä¸ªå¯¹è±¡
+    // å¦‚æžœä¸å¤Ÿ batchNum ä¸ªï¼Œæœ‰å¤šå°‘æ‹¿å¤šå°‘
     start = span->_freeList;
     end = start;
     size_t i = 0;
@@ -101,9 +106,10 @@ size_t CentralCache::FetchRangeObj(void*& start, void*& end, size_t batchNum, si
 
     span->_freeList = NextObj(end);
     NextObj(end) = nullptr;
+    // è®°å½•åˆ†é…å‡ºåŽ»çš„æ•°é‡ï¼Œä¾¿äºŽåˆ¤æ–­æ˜¯å¦å¯å½’è¿˜ PageCache
     span->_useCount += actualNum;
 
-    //// Ìõ¼þ¶Ïµã
+    //// æ¡ä»¶æ–­ç‚¹
     //int j = 0;
     //void* cur = start;
     //while (cur)
@@ -123,10 +129,11 @@ size_t CentralCache::FetchRangeObj(void*& start, void*& end, size_t batchNum, si
 }
 
 
-// ½«Ò»¶¨ÊýÁ¿µÄ¶ÔÏóÊÍ·Åµ½ span ¿ç¶ÈÖÐ
+// å°†ä¸€å®šæ•°é‡çš„å¯¹è±¡é‡Šæ”¾åˆ° span è·¨åº¦ä¸­
 void CentralCache::ReleaseListToSpans(void* start, size_t size)
 {
     size_t index = SizeClass::Index(size);
+    // æ¡¶çº§é”ï¼šåªæœ‰è®¿é—®åŒä¸€æ¡¶çš„çº¿ç¨‹æ‰ä¼šç«žäº‰
     _spanLists[index]._mtx.lock();
 
     while (start)
@@ -138,8 +145,8 @@ void CentralCache::ReleaseListToSpans(void* start, size_t size)
         span->_freeList = start;
         span->_useCount--;
 
-        // ËµÃ÷ span µÄÇÐ³öÈ¥µÄËùÓÐÐ¡¿éÄÚ´æ¶¼»ØÀ´ÁË
-        // Õâ¸ö span ¾Í¿ÉÒÔÔÙ»ØÈ¥¸ø page cache£¬pagecache ¿ÉÒÔÔÙ³¢ÊÔÈ¥×öÇ°ºóÒ³µÄºÏ²¢
+        // è¯´æ˜Ž span çš„åˆ‡å‡ºåŽ»çš„æ‰€æœ‰å°å—å†…å­˜éƒ½å›žæ¥äº†
+        // è¿™ä¸ª span å°±å¯ä»¥å†å›žåŽ»ç»™ page cacheï¼Œpagecache å¯ä»¥å†å°è¯•åŽ»åšå‰åŽé¡µçš„åˆå¹¶
         if (span->_useCount == 0)
         {
             _spanLists[index].Erase(span);
@@ -147,8 +154,8 @@ void CentralCache::ReleaseListToSpans(void* start, size_t size)
             span->_next = nullptr;
             span->_prev = nullptr;
 
-            // ÊÍ·Å span ¸ø page cache Ê±£¬Ê¹ÓÃ page cache µÄËø¾Í¿ÉÒÔÁË
-            // ÕâÊ±°ÑÍ°Ëø½âµô
+            // é‡Šæ”¾ span ç»™ page cache æ—¶ï¼Œä½¿ç”¨ page cache çš„é”å°±å¯ä»¥äº†
+            // è¿™æ—¶æŠŠæ¡¶é”è§£æŽ‰
             _spanLists[index]._mtx.unlock();
 
             PageCache::GetInstance()->_pageMtx.lock();

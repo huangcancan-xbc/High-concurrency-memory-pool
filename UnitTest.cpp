@@ -1,90 +1,163 @@
 ﻿// ConcurrentMemoryPool.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
-//
+//#define RUN_EXTRA_TESTS   // 条件编译：只有当宏 RUN_EXTRA_TESTS 被定义时，放开这里下文的mian才能被执行
 
 #include "ObjectPool.h"
 #include "ConcurrentAlloc.h"
+#include <random>
 
-void Alloc1()
+// 覆盖对齐边界尺寸，验证分桶映射稳定
+static void TestBoundarySizes()
 {
-    for (size_t i = 0; i < 5; i++)
+    const size_t kIters = 2000;
+    const size_t sizes[] = {
+        1, 7, 8, 9, 127, 128, 129,
+        1023, 1024, 1025,
+        8191, 8192, 8193,
+        65535, 65536,
+        262143, 262144
+    };
+
+    for (size_t s : sizes)
     {
-        void* ptr=ConcurrentAlloc(6);
+        std::vector<void*> v;
+        v.reserve(kIters);
+        for (size_t i = 0; i < kIters; ++i)
+        {
+            v.push_back(ConcurrentAlloc(s));
+        }
+        for (void* p : v)
+        {
+            ConcurrentFree(p);
+        }
     }
 }
 
-void Alloc2()
+// 走大对象路径，验证页级分配/释放
+static void TestLargeAlloc()
 {
-    for (size_t i = 0; i < 5; i++)
+    const size_t kIters = 200;
+    const size_t sizes[] = {
+        MAX_BYTES + 1,
+        MAX_BYTES + 123,
+        512 * 1024,
+        1024 * 1024
+    };
+
+    for (size_t s : sizes)
     {
-        void* ptr = ConcurrentAlloc(7);
+        std::vector<void*> v;
+        v.reserve(kIters);
+        for (size_t i = 0; i < kIters; ++i)
+        {
+            v.push_back(ConcurrentAlloc(s));
+        }
+        for (void* p : v)
+        {
+            ConcurrentFree(p);
+        }
     }
 }
 
-void TLSTest()
+// 跨线程释放，覆盖 CentralCache 回收路径
+static void TestCrossThreadFree()
 {
-    std::thread t1(Alloc1);
-    t1.join();
+    const size_t n = 60000;
+    std::vector<void*> v;
+    v.reserve(n);
 
-    std::thread t2(Alloc2);
-    t2.join();
-}
+    std::thread producer([&] {
+        for (size_t i = 0; i < n; ++i)
+        {
+            v.push_back(ConcurrentAlloc((i % 8192) + 1));
+        }
+    });
+    producer.join();
 
-void TestConcurrentAlloc1()
-{
-    void* p1 = ConcurrentAlloc(6);
-    void* p2 = ConcurrentAlloc(8);
-    void* p3 = ConcurrentAlloc(1);
-    void* p4 = ConcurrentAlloc(7);
-    void* p5 = ConcurrentAlloc(8);
-
-    cout << p1 << endl;
-    cout << p2 << endl;
-    cout << p3 << endl;
-    cout << p4 << endl;
-    cout << p5 << endl;
-
-    ConcurrentFree(p1);
-    ConcurrentFree(p2);
-    ConcurrentFree(p3);
-    ConcurrentFree(p4);
-    ConcurrentFree(p5);
-}
-
-void TestConcurrentAlloc2()
-{
-    for (size_t i = 0; i < 1024; i++)
+    std::atomic<size_t> idx = 0;
+    const size_t workers = 4;
+    std::vector<std::thread> ts;
+    ts.reserve(workers);
+    for (size_t t = 0; t < workers; ++t)
     {
-        void* p1 = ConcurrentAlloc(6);
-        cout << p1 << endl;
+        ts.emplace_back([&] {
+            while (true)
+            {
+                size_t i = idx.fetch_add(1);
+                if (i >= v.size())
+                {
+                    break;
+                }
+                ConcurrentFree(v[i]);
+            }
+        });
     }
-
-    void* p2 = ConcurrentAlloc(8);
-    cout << p2 << endl;
+    for (auto& t : ts)
+    {
+        t.join();
+    }
 }
 
-void BigAlloc()
+// 随机大小 + 乱序释放，模拟真实负载
+static void TestRandomMixed()
 {
-    void* p1 = ConcurrentAlloc(257 * 1024);
-    ConcurrentFree(p1);
+    const size_t total = 100000;
+    const size_t batch = 10000;
 
-    void* p2 = ConcurrentAlloc(129 * 8 * 1024);
-    ConcurrentFree(p2);
+    // 固定种子保证可复现
+    std::mt19937_64 rng(12345);
+    std::uniform_int_distribution<size_t> dist(1, MAX_BYTES * 2);
+
+    std::vector<void*> v;
+    v.reserve(batch);
+
+    for (size_t offset = 0; offset < total; offset += batch)
+    {
+        v.clear();
+        for (size_t i = 0; i < batch; ++i)
+        {
+            size_t s = dist(rng);
+            v.push_back(ConcurrentAlloc(s));
+        }
+
+        std::shuffle(v.begin(), v.end(), rng);
+
+        std::atomic<size_t> idx = 0;
+        const size_t workers = 4;
+        std::vector<std::thread> ts;
+        ts.reserve(workers);
+        for (size_t t = 0; t < workers; ++t)
+        {
+            ts.emplace_back([&] {
+                while (true)
+                {
+                    size_t i = idx.fetch_add(1);
+                    if (i >= v.size())
+                    {
+                        break;
+                    }
+                    ConcurrentFree(v[i]);
+                }
+            });
+        }
+        for (auto& t : ts)
+        {
+            t.join();
+        }
+    }
 }
 
+#ifdef RUN_EXTRA_TESTS
+int main()
+{
+    TestBoundarySizes();
+    TestLargeAlloc();
+    TestCrossThreadFree();
+    TestRandomMixed();
 
-
-//int main()
-//{
-//    //TestObjectPool();
-//    //TLSTest();
-//    //TestConcurrentAlloc1();
-//    TestConcurrentAlloc2();
-//    BigAlloc();
-//
-//
-//
-//    return 0;
-//}
+    cout << "Extra tests: OK" << endl;
+    return 0;
+}
+#endif
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
 // 调试程序: F5 或调试 >“开始调试”菜单

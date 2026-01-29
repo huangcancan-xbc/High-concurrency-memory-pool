@@ -1,7 +1,7 @@
-#pragma once
+ï»¿#pragma once
 #include "Common.h"
 
-// µ¥ÀıÄ£Ê½
+// å•ä¾‹æ¨¡å¼
 class CentralCache
 {
 public:
@@ -10,15 +10,16 @@ public:
 		return &_sInst;
 	}
 
-	// »ñÈ¡Ò»¸ö·Ç¿ÕµÄ Span
+	// è·å–ä¸€ä¸ªéç©ºçš„ Span
 	Span* GetOneSpan(SpanList& list,size_t size);
 
-	// ´ÓÖĞĞÄ»º´æ»ñÈ¡Ò»¶¨ÊıÁ¿µÄ¶ÔÏó¸ø thread cache
+	// ä»ä¸­å¿ƒç¼“å­˜è·å–ä¸€å®šæ•°é‡çš„å¯¹è±¡ç»™ thread cache
 	size_t FetchRangeObj(void*& start, void*& end, size_t batchNum, size_t size);
 
-	// ½«Ò»¶¨ÊıÁ¿µÄ¶ÔÏóÊÍ·Åµ½ span ¿ç¶ÈÖĞ
+	// å°†ä¸€å®šæ•°é‡çš„å¯¹è±¡é‡Šæ”¾åˆ° span è·¨åº¦ä¸­
 	void ReleaseListToSpans(void* start, size_t byte_size);
 private:
+	// æ¯ä¸ªæ¡¶ç»´æŠ¤è‡ªå·±çš„ SpanListï¼Œæ¡¶é”åœ¨ SpanList å†…éƒ¨
 	SpanList _spanLists[NFREELISTS];
 
 private:

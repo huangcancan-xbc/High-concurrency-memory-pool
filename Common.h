@@ -18,9 +18,13 @@ using std::endl;
 #endif
 
 
+// 小对象上限：超过就走页级分配，避免过多小桶和碎片
 static const size_t MAX_BYTES = 256 * 1024;		// 256KB
+// 固定桶数：由对齐策略推导而来，保证 O(1) 映射
 static const size_t NFREELISTS = 208;			// 208个自由链表
+// PageCache 管理的最大页数，超出直接交给系统
 static const size_t NPAGES = 128;				// 128个页
+// 页大小固定 8KB，用移位代替乘除更快
 static const size_t PAGE_SHIFT = 13;			// 页大小为8KB
 
 #ifdef _WIN64
@@ -31,7 +35,7 @@ static const size_t PAGE_SHIFT = 13;			// 页大小为8KB
 
 
 
-// 直接去堆上按页申请空间
+// 直接向系统按页申请，绕过 CRT 堆锁，减少全局竞争
 inline static void* SystemAlloc(size_t kpage)
 {
 #ifdef _WIN32
@@ -61,6 +65,7 @@ inline static void SystemFree(void* ptr)
 
 static void*& NextObj(void* obj)
 {
+	// freelist 用对象本身头部存 next 指针，省额外节点内存
 	return *(void**)obj;
 }
 
@@ -74,6 +79,7 @@ public:
 	{
 		assert(obj);
 
+		// 头插更快，不用遍历
 		// 头插
 		// *(void**)obj = _freeList;
 		NextObj(obj) = _freeList;
@@ -102,6 +108,7 @@ public:
 
 	void PushRange(void* start, void* end,size_t n)
 	{
+		// 批量接入，减少频繁 push/pop 的开销
 		NextObj(end) = _freeList;
 		_freeList = start;
 
@@ -122,7 +129,9 @@ public:
 
 	void PopRange(void*& start, void*& end, size_t n)
 	{
-		assert(n >= _size);
+		// 防止 n > _size 导致越界遍历和 _size 下溢
+		assert(n <= _size);
+		// 批量摘链，配合 CentralCache 回收
 		start = _freeList;
 		end = start;
 
@@ -138,6 +147,7 @@ public:
 
 	size_t& MaxSize()
 	{
+		// 每个桶的“慢启动”阈值，控制批量大小
 		return _maxSize;
 	}
 
@@ -161,8 +171,8 @@ public:
 	// 整体控制在最多10%左右的内存碎片浪费
 	// [1,128]					8byte对齐			freelist[0,16)
 	// [128+1,1024]				16byte对齐			freelist[16,72)
-	// [1024+1,81024]			128byte对齐			freelist[72,128)
-	// [8*1024+1,641024]		1024byte对齐			freelist[128,184)
+	// [1024+1,8*1024]			128byte对齐			freelist[72,128)
+	// [8*1024+1,64*1024]		1024byte对齐			freelist[128,184)
 	// [64*1024+1,256*1024]		8*1024byte对齐		freelist[184,208)
 	 
 	//size_t _RoundUp(size_t size, size_t AllgnNum)
@@ -180,9 +190,10 @@ public:
 	//	return alignSize;
 	//}
 
-	static inline size_t _RoundUp(size_t bytes, size_t AllgnNum)
+	static inline size_t _RoundUp(size_t bytes, size_t AlignNum)
 	{
-		return ((bytes + AllgnNum - 1) & ~(AllgnNum - 1));
+		// 位运算对齐，比除法取整更快
+		return ((bytes + AlignNum - 1) & ~(AlignNum - 1));
 	}
 
 	static inline size_t RoundUp(size_t size)
@@ -227,6 +238,7 @@ public:
 
 	static inline size_t _Index(size_t bytes, size_t alignNum)
 	{
+		// 分组映射：让桶号连续且计算 O(1)
 		return ((bytes + static_cast<size_t>((1 << alignNum) - 1)) >> alignNum) - 1;
 	}
 
@@ -234,6 +246,7 @@ public:
 	{
 		assert(bytes <= MAX_BYTES);
 
+		// 每一组桶数固定，便于算索引且控制碎片率
 		static int group_array[4] = { 16, 56, 56, 56 };
 		if (bytes <= 128)
 		{
@@ -243,7 +256,7 @@ public:
 		{
 			return _Index(bytes - 128, 4) + group_array[0];
 		}
-		else if (bytes <= 81024)
+		else if (bytes <= 8 * 1024)
 		{
 			return _Index(bytes - 1024, 7) + group_array[1] + group_array[0];
 		}
@@ -273,7 +286,7 @@ public:
 			return 0;
 		}
 
-		// [2, 512]，⼀次批量移动多少个对象的(慢启动)上限值
+		// [2, 512]，一次批量移动对象数的上限（慢启动）
 		// 小对象一次批量上限高
 		// 大对象一次批量上限低
 		size_t num = MAX_BYTES / size;
@@ -296,6 +309,7 @@ public:
 	// 单个对象 256KB
 	static size_t NumMovePage(size_t size)
 	{
+		// 把“对象数”换算成“页数”，最少 1 页
 		size_t num = NumMoveSize(size);
 
 		size_t npage = num * size;
@@ -324,6 +338,7 @@ struct Span
 	size_t _useCount = 0;			// 切好小块内存，被分配给 threadcache 的计数
 	void* _freeList = nullptr;		// 切好的小块内存的自由链表
 
+	// 合并时的保护标记：有线程在用就不能合并
 	bool _isUse = false;			// 是否正在被使用
 };
 
@@ -335,6 +350,7 @@ class SpanList
 public:
 	SpanList()
 	{
+		// 哨兵节点：统一插删逻辑，避免空表分支
 		_head = new Span;
 		_head->_next = _head;
 		_head->_prev = _head;
@@ -362,6 +378,7 @@ public:
 
 	Span* PopFront()
 	{
+		// O(1) 弹出头结点，配合桶锁使用
 		Span* front = _head->_next;
 		Erase(front);
 		return front;
@@ -372,6 +389,7 @@ public:
 		assert(pos);
 		assert(newSpan);
 
+		// 双向链表插入，保持 O(1)
 		Span* prev =pos->_prev;
 		// prev newSpan pos
 		prev->_next = newSpan;

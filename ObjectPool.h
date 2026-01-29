@@ -1,9 +1,10 @@
-#pragma once
+ï»¿#pragma once
 #include "Common.h"
+#include <cstdint>
 
 
 
-// ¶¨³¤ÄÚ´æ³Ø
+// å®šé•¿å†…å­˜æ± 
 //template<size_t N>
 //class ObjectPool
 //{
@@ -11,6 +12,7 @@
 //};
 
 
+// è½»é‡å¯¹è±¡æ± ï¼šåªè´Ÿè´£åˆ†é…/å›æ”¶å…ƒæ•°æ®å¯¹è±¡ï¼Œä¸åšå¤æ‚ç”Ÿå‘½å‘¨æœŸç®¡ç†
 template<typename T>
 class ObjectPool
 {
@@ -19,7 +21,7 @@ public:
 	{
 		T* obj = nullptr;
 
-		// ÓÅÏÈ°Ñ»¹»ØÀ´µÄÄÚ´æ¿é¶ÔÏóÔÙ´ÎÖØ¸´ÀûÓÃ
+		// ä¼˜å…ˆæŠŠè¿˜å›æ¥çš„å†…å­˜å—å¯¹è±¡å†æ¬¡é‡å¤åˆ©ç”¨
 		if (_freeList != nullptr)
 		{
 			void* next = *((void**)_freeList);
@@ -28,25 +30,46 @@ public:
 		}
 		else
 		{
-			// Ê£ÓàÄÚ´æ²»¹»Ò»¸ö¶ÔÏó´óĞ¡Ê±£¬ÔòÖØĞÂ·ÖÅäÒ»¿é´ó¿Õ¼ä
-			if (_remainBytes < sizeof(T))
-			{
-                _remainBytes = 128 * 1024;
+			size_t objSize = sizeof(T) < sizeof(void*) ? sizeof(void*) : sizeof(T);
+			size_t align = alignof(T);
+			size_t alignMask = align - 1;
+
+			auto allocBlock = [&]() {
+				// å¤§å—å†…å­˜æŒ‰é¡µç”³è¯·ï¼Œå¤±è´¥ç›´æ¥æŠ›å¼‚å¸¸
+				_remainBytes = 128 * 1024;
 				//_memory = (char*)malloc(_remainBytes);
-                _memory = (char*)SystemAlloc(_remainBytes >> 13);
+				_memory = (char*)SystemAlloc(_remainBytes >> 13);
 				if (_memory == nullptr)
 				{
 					throw std::bad_alloc();
 				}
+			};
+
+			// ä½¿ç”¨ objSize å¹¶è€ƒè™‘å¯¹é½å¡«å……ï¼Œé¿å…è¶Šç•Œ/ä¸‹æº¢
+			if (_remainBytes < objSize + alignMask)
+			{
+				allocBlock();
 			}
 
-			obj = (T*)_memory;
-			size_t objSize = sizeof(T) < sizeof(void*) ? sizeof(void*) : sizeof(T);
+			uintptr_t raw = reinterpret_cast<uintptr_t>(_memory);
+			uintptr_t aligned = (raw + alignMask) & ~static_cast<uintptr_t>(alignMask);
+			size_t padding = static_cast<size_t>(aligned - raw);
+
+			if (_remainBytes < padding + objSize)
+			{
+				allocBlock();
+				raw = reinterpret_cast<uintptr_t>(_memory);
+				aligned = (raw + alignMask) & ~static_cast<uintptr_t>(alignMask);
+				padding = static_cast<size_t>(aligned - raw);
+			}
+
+			obj = (T*)aligned;
+			_memory = (char*)aligned;
 			_memory += objSize;
-			_remainBytes -= objSize;
+			_remainBytes -= (padding + objSize);
 		}
 
-		// ¶¨Î» New£¬ÏÔÊ¾µ÷ÓÃTµÄ¹¹Ôìº¯Êı½øĞĞ³õÊ¼»¯
+		// å®šä½ Newï¼Œæ˜¾å¼è°ƒç”¨Tçš„æ„é€ å‡½æ•°è¿›è¡Œåˆå§‹åŒ–
 		new(obj)T;
 
 		return obj;
@@ -54,20 +77,19 @@ public:
 
 	void Delete(T* obj)
 	{
-		// ÏÔÊ¾µ÷ÓÃÎö¹¹º¯ÊıÇåÀí¶ÔÏó
+		// æ˜¾å¼è°ƒç”¨ææ„å‡½æ•°æ¸…ç†å¯¹è±¡
 		obj->~T();
 
-		// »ØÊÕµ½×ÔÓÉÁ´±íÖĞ£¨Á´±íÍ·²å£©
+		// å›æ”¶åˆ°è‡ªç”±é“¾è¡¨ä¸­ï¼ˆé“¾è¡¨å¤´æ’ï¼‰
 		*((void**)obj) = _freeList;
 		_freeList = obj;
 	}
 
 private:
-	char* _memory = nullptr;			// Ö¸Ïò´ó¿éÄÚ´æµÄÖ¸Õë
-	size_t _remainBytes = 0;			// ´ó¿éÄÚ´æÔÚÇĞ·Ö¹ı³ÌÖĞÊ£Óà×Ö½ÚÊı
-	void* _freeList = nullptr;			// »¹»ØÀ´¹ı³ÌÖĞÁ´½ÓµÄ×ÔÓÉÁ´±íµÄÍ·Ö¸Õë
+	char* _memory = nullptr;            // æŒ‡å‘å¤§å—å†…å­˜çš„æŒ‡é’ˆ
+	size_t _remainBytes = 0;            // å¤§å—å†…å­˜åœ¨åˆ‡åˆ†è¿‡ç¨‹ä¸­å‰©ä½™å­—èŠ‚æ•°
+	void* _freeList = nullptr;          // è¿˜å›æ¥è¿‡ç¨‹ä¸­é“¾æ¥çš„è‡ªç”±é“¾è¡¨çš„å¤´æŒ‡é’ˆ
 };
-
 
 
 
@@ -88,10 +110,10 @@ private:
 //
 //void TestObjectPool()
 //{
-//    // ÉêÇëÊÍ·ÅµÄÂÖ´Î
+//    // ç”³è¯·é‡Šæ”¾çš„è½®æ¬¡
 //    const size_t Rounds = 10;
 //
-//    // Ã¿ÂÖÉêÇëÊÍ·Å¶àÉÙ´Î
+//    // æ¯è½®ç”³è¯·é‡Šæ”¾å¤šå°‘æ¬¡
 //    const size_t N = 1000000;
 //
 //    std::vector<TreeNode*> v1;
@@ -133,6 +155,6 @@ private:
 //
 //    size_t end2 = clock();
 //
-//    cout << "ÆÕÍ¨ÉêÇëÊÍ·Å»¨·ÑÊ±¼ä£º" << end1 - begin1 << endl;
-//    cout << "¶ÔÏó³ØÉêÇëÊÍ·Å»¨·ÑÊ±¼ä£º" << end2 - begin2 << endl;
+//    cout << "æ™®é€šç”³è¯·é‡Šæ”¾èŠ±è´¹æ—¶é—´ï¼š" << end1 - begin1 << endl;
+//    cout << "å¯¹è±¡æ± ç”³è¯·é‡Šæ”¾èŠ±è´¹æ—¶é—´ï¼š" << end2 - begin2 << endl;
 //}
