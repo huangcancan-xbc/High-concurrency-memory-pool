@@ -30,6 +30,11 @@
 
 ## 3. 如何使用
 
+>1.  **保留测试文件，但排除编译：** 在工程里把 Benchmark.cpp / UnitTest.cpp 设为“排除在生成中”，然后自己写一个 main。
+>2.  **直接删掉测试文件**：把 Benchmark.cpp / UnitTest.cpp，然后在自己的 main.cpp 里：
+>    -   `#include "ConcurrentAlloc.h"`
+>    -   使用 ConcurrentAlloc(size) / ConcurrentFree(ptr)
+
 对外有两个接口（在 `ConcurrentAlloc.h`）：
 
 ### 1. `void* ConcurrentAlloc(size_t size)`
@@ -116,7 +121,7 @@ int main()
 
 ## 4. 项目设计思路 & 工作原理
 
-<img src="示意图.png" alt="示意图" style="zoom:50%;" />
+<img src="示意图.png" alt="示意图" style="zoom:30%;" />
 
 把内存分配想成快递体系：
 
@@ -170,8 +175,8 @@ int main()
 - `PageMap.h`：页号 → Span 映射。
 - `ObjectPool.h`：Span/辅助结构对象池。
 - `ConcurrentAlloc.h`：对外分配/释放接口。
-- `Benchmark.cpp`：性能基准。
-- `UnitTest.cpp`：扩展测试入口（可选）。
+- `Benchmark.cpp`（**非核心源代码**）：用来做性能/压力测试，主要对比：并发内存池（ConcurrentAlloc/ConcurrentFree） vs 系统 malloc/free 的耗时，结果输出每轮分配/释放耗时和总耗时，用来直观看性能差距。
+- `UnitTest.cpp`（**非核心源代码**）：用来做功能正确性验证，覆盖边界尺寸、大对象、跨线程释放、随机混合场景，确保逻辑正确、稳定。
 
 ## 6. 为什么能达到高并发效果？
 
